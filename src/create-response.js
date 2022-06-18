@@ -210,10 +210,10 @@ module.exports = {
             tts:
               `Ответ неверный! <speaker audio=marusia-sounds/game-loss-2> ` +
               questions[questionId - 1]["tts"],
-            card: {
-              type: 'BigImage',
-              image_id: questions[questionId-1]['image_id']
-            },
+            // card: {
+            //   type: 'BigImage',
+            //   image_id: questions[questionId-1]['image_id']
+            // },
             buttons: getButtons(questions[questionId - 1]["variants"]),
             end_session: false,
           },
@@ -226,10 +226,10 @@ module.exports = {
       response: {
         text: [questions[questionId - 1]["text"]],
         tts: questions[questionId - 1]["tts"],
-        card: {
-          'type': 'BigImage',
-          'image_id': questions[questionId-1]['image_id']
-        },
+        // card: {
+        //   'type': 'BigImage',
+        //   'image_id': questions[questionId-1]['image_id']
+        // },
         buttons: getButtons(questions[questionId - 1]["variants"]),
         end_session: false,
       },
@@ -248,10 +248,10 @@ module.exports = {
           `Тест завершен <speaker audio=marusia-sounds/game-win-1> Правильных ответов - ${rightAnswers}. Рекомендуемые категории: ` +
           recommendations[0].tts,
           commands: [
-            {
-                "type":"BigImage",
-                "image_id":457239026
-            },
+            // {
+            //     "type":"BigImage",
+            //     "image_id":457239026
+            // },
             {
                 "type": "MiniApp",
                 "url": "https://vk.com/app7923597",
