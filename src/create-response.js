@@ -254,7 +254,7 @@ module.exports = {
             // },
             {
                 "type": "MiniApp",
-                "url": "https://vk.com/app7923597",
+                "url": "https://vk.com/app7543093",
             } 
         ],
         end_session: true,
