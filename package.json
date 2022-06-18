@@ -1,0 +1,32 @@
+{
+  "name": "marusia-skill-echo",
+  "version": "0.0.1",
+  "description": "Echoing skill for Marusia voice assistant",
+  "main": "server.js",
+  "scripts": {
+    "start": "./node_modules/.bin/netlify-lambda serve src",
+    "build": "./node_modules/.bin/netlify-lambda build src"
+    },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "netlify-lambda": "^2.0.15",
+    "ramda": "^0.27.1",
+    "serverless-http": "^3.0.1"
+  },
+  "engines": {
+    "node": "12.x"
+  },
+  "repository": {
+    "url": "https://glitch.com/edit/#!/marusia-skill-echo"
+  },
+  "license": "MIT",
+  "keywords": [
+    "node",
+    "glitch",
+    "express"
+  ],
+  "devDependencies": {
+    "nodemon": "^2.0.7"
+  }
+}
