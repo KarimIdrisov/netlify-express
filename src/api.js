@@ -7,7 +7,7 @@ const app = express();
 const router = express.Router();
 
 // Настройка CORS
-server.use(function (req, res, next) {
+app.use(function (req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
     "Access-Control-Allow-Headers",
@@ -22,10 +22,10 @@ server.use(function (req, res, next) {
 
 
 // Парсинг json
-server.use(bodyParser.json());
+app.use(bodyParser.json());
 
 // Парсинг запросов по типу: application/x-www-form-urlencoded
-server.use(
+app.use(
   bodyParser.urlencoded({
     extended: true
   })
@@ -50,7 +50,7 @@ router.post('/testpost',(req,res) => {
       });
 })
 
-server.post("/webhook", (req, res) => {
+router.post("/webhook", (req, res) => {
   try {
     res.json(createResponse.get_response(req.body));
   } catch (err) {
