@@ -6,42 +6,50 @@ var questions = [
   {
     'text': "1. Знаете ли вы HTML и СSS?",
     'tts': "Первый вопрос. Знаете ли вы HTML и СSS?",
-    'recommend': 'Web'
+    'recommend': 'Web',
+    'image_id': 457239017
   },
   {
     'text': "2. Можно ли на Django написать backend?",
     'tts': "Второй вопрос.  Можно ли на Django написать backend?",
-    'recommend': 'Backend'
+    'recommend': 'Backend',
+    'image_id': 457239021
   },
   {
     'text': "3. Изучали ли вы Unity?",
     'tts': "Третий вопрос. Изучали ли вы Unity?",
-    'recommend': 'Gamedev'
+    'recommend': 'Gamedev',
+    'image_id': 457239020
   },
   {
     'text': "4. Знаете ли вы Kotlin или Java?",
     'tts': "Четвертый вопрос. Знаете ли вы Kotlin или Java?",
-    'recommend': 'Mobile'
+    'recommend': 'Mobile',
+    'image_id': 457239022
   },
   {
     'text': "5. Знакомы ли вы c Pandas и Python?",
     'tts': "Пятый вопрос. Знакомы ли вы Pandas и Python?",
-    'recommend': 'Анализ данных'
+    'recommend': 'Анализ данных',
+    'image_id': 457239018
   },
   {
     'text': "6. Занимались ли разработкой скиллов для Маруси?",
     'tts': "Шестой вопрос. Занимались ли разработкой скиллов для Маруси?",
-    'recommend': 'Маруся'
+    'recommend': 'Маруся',
+    'image_id': 457239023
   },
   {
     'text': "7. Занимались ли разработкой VK Mini Apps?",
     'tts': "Шестой вопрос. Занимались ли разработкой VK Mini Apps?",
-    'recommend': 'VK Mini Apps'
+    'recommend': 'VK Mini Apps',
+    'image_id': 457239024
   },
   {
     'text': "8. Знаете ли вы как создавать удобный и современный интерфейс?",
     'tts': "Восьмой вопрос. Знаете ли вы как создавать удобный и современный интерфейс?",
-    'recommend': 'Дизайн интерфейсов'
+    'recommend': 'Дизайн интерфейсов',
+    'image_id': 457239019
   },
 ]
 let recommendations = []
@@ -139,6 +147,10 @@ module.exports = {
           [questions[question-1]['text']],
         tts:
           questions[question-1]['tts'],
+        card: {
+          type: 'BigImage',
+          image_id: questions[question-1]['image_id']
+        },
         buttons: [
           {
             title: "Да",
