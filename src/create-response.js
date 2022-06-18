@@ -1,58 +1,78 @@
-const { pick } = require("ramda");
+const { pick, last } = require("ramda");
 
-var question = 0;
+var questionId = 0;
+var rightAnswers = 0;
 var answers = [];
+var lastAnswer = "";
 var questions = [
   {
-    'text': "1. Знаете ли вы HTML и СSS?",
-    'tts': "Первый вопрос. Знаете ли вы HTML и СSS?",
-    'recommend': 'Web',
-    'image_id': 457239017
+    text: "1. Операционная система это набор взаимосвязанных программ, осуществляющих управление компьютером и взаимодействие с пользователем?",
+    tts: "Первый вопрос. Операционная система это набор взаимосвязанных программ, осуществляющих управление компьютером и взаимодействие с пользователем?",
+    right: "да",
+    variants: ["да", "нет"],
+    image_id: 457239025,
   },
   {
-    'text': "2. Можно ли на Django написать backend?",
-    'tts': "Второй вопрос.  Можно ли на Django написать backend?",
-    'recommend': 'Backend',
-    'image_id': 457239021
+    text: "2. Можно ли на Django написать backend?",
+    tts: "Второй вопрос.  Можно ли на Django написать backend?",
+    right: "да",
+    variants: ["да", "нет"],
+    image_id: 457239021,
   },
   {
-    'text': "3. Изучали ли вы Unity?",
-    'tts': "Третий вопрос. Изучали ли вы Unity?",
-    'recommend': 'Gamedev',
-    'image_id': 457239020
+    text: "3. Unity это межплатформенная среда разработки компьютерных игр?",
+    tts: "Третий вопрос. Unity это межплатформенная среда разработки компьютерных игр?",
+    right: "да",
+    variants: ["да", "нет"],
+    image_id: 457239020,
   },
   {
-    'text': "4. Знаете ли вы Kotlin или Java?",
-    'tts': "Четвертый вопрос. Знаете ли вы Kotlin или Java?",
-    'recommend': 'Mobile',
-    'image_id': 457239022
+    text: "4. Кто разработал ЯП Kotlin?",
+    tts: "Четвертый вопрос. Кто разработал язык программирования Kotlin?",
+    right: "Jetbrains",
+    variants: ["JetBrains", "Microsoft", "Yandex"],
+    image_id: 457239022,
   },
   {
-    'text': "5. Знакомы ли вы c Pandas и Python?",
-    'tts': "Пятый вопрос. Знакомы ли вы Pandas и Python?",
-    'recommend': 'Анализ данных',
-    'image_id': 457239018
+    text: "5. На чём написан Pandas?",
+    tts: "Пятый вопрос. На чём написан Pandas?",
+    right: "python",
+    variants: ["java", "c#", "python"],
+    image_id: 457239018,
   },
   {
-    'text': "6. Занимались ли разработкой скиллов для Маруси?",
-    'tts': "Шестой вопрос. Занимались ли разработкой скиллов для Маруси?",
-    'recommend': 'Маруся',
-    'image_id': 457239023
+    text: "6. Что такое Маруся?",
+    tts: "Шестой вопрос. Что такое Маруся?",
+    right: "голосовой помощник",
+    variants: ["машина", "мессенджер", "голосовой помощник"],
+    image_id: 457239023,
   },
   {
-    'text': "7. Занимались ли разработкой VK Mini Apps?",
-    'tts': "Шестой вопрос. Занимались ли разработкой VK Mini Apps?",
-    'recommend': 'VK Mini Apps',
-    'image_id': 457239024
+    text: "7. Чем отличается Javasript от Typescript?",
+    tts: "Седьмой вопрос. Чем отличается Javasript от Typescript?",
+    right: "типизацией",
+    variants: ["названием", "типизацией"],
+    image_id: 457239024,
   },
   {
-    'text': "8. Знаете ли вы как создавать удобный и современный интерфейс?",
-    'tts': "Восьмой вопрос. Знаете ли вы как создавать удобный и современный интерфейс?",
-    'recommend': 'Дизайн интерфейсов',
-    'image_id': 457239019
+    text: "8. Для чего создан Redux?",
+    tts: "Восьмой вопрос. Что такое Redux?",
+    right: "для управления состоянием приложения",
+    variants: [
+      "для управления состоянием приложения",
+      "для настройки роутинга",
+    ],
   },
-]
-let recommendations = []
+];
+let recommendations = [];
+
+const getButtons = (variants) => {
+  return variants.map((variant) => {
+    return {
+      title: variant,
+    };
+  });
+};
 
 module.exports = {
   get_response: function (req) {
@@ -65,134 +85,215 @@ module.exports = {
     if (req.session.new) {
       return this.clientStart(req);
     }
-    if ((req.request.command === "нет" && question === 0) || req.request.command === "on_interrupt")
-          return this.clientStop(req);
-    if (req.request.command === "да" && question === 0) {
-      question = 1;
+    if (
+      (req.request.command === "нет" && questionId === 0) ||
+      req.request.command === "on_interrupt"
+    )
+      return this.clientStop(req);
+    if (req.request.command === "да" && questionId === 0) {
+      questionId = 1;
       return this.startTest(req);
     }
-    if (question > 0 && question <= 7) {
-        question += 1
-        if (req.request.command.includes('да')) {
-          recommendations.push(questions[question-1]['recommend']);
-          answers.push(1);
-          return this.startTest(req);
-        } else {
-          answers.push(0);
-          return this.startTest(req);
-        }
+    if (questionId > 0 && questionId <= 7) {
+      lastAnswer = req.request.command;
+      if (
+        req.request.command === questions[questionId - 1]["right"].toLowerCase()
+      ) {
+        questionId += 1;
+        rightAnswers += 1;
+        return this.startTest(req);
+      } else {
+        questionId += 1;
+        return this.startTest(req);
+      }
     }
-    if (question >= 8) {
+    if (questionId >= 8) {
+      if (
+        req.request.command === questions[questionId - 1]["right"].toLowerCase()
+      ) {
+        rightAnswers += 1;
+      }
       if (recommendations.length === 0) {
-        recommendations.push('Мы не смогли подобрать вам рекомендации.')
+        if (rightAnswers <= 2) {
+          recommendations.push({
+            text: "Маруся\nVK Mini Apps",
+            tts: "Маруся\nVK Mini Apps",
+          });
+        } else if (rightAnswers > 2 && rightAnswers <= 4) {
+          recommendations.push({
+            text: "Маруся\nVK Mini Apps\nGamede\nДизайн интерфейсов",
+            tts: "Маруся\nVK Mini Apps\nGame dev\nДизайн интерфейсов",
+          });
+        } else if (rightAnswers > 4 && rightAnswers <= 6) {
+          recommendations.push({
+            text: "Маруся\nVK Mini Apps\nGamedev\nДизайн интерфейсов\nBack End\nАнализ данных\nMobile",
+            tts: "Маруся\nVK Mini Apps\nGame dev\nДизайн интерфейсов\nBack End\nАнализ данных\nMobile",
+          });
+        } else {
+          recommendations.push({
+            text: "Маруся\nVK Mini Apps\nGamedev\nДизайн интерфейсов\nBack End\nАнализ данных\nОптимизация и RL\nMobile\nComputer Vision",
+            tts: "Маруся\nVK Mini Apps\nGamedev\nДизайн интерфейсов\nBack End\nАнализ данных\nОптимизация и RL\nMobile\nComputer Vision",
+          });
+        }
       }
       return this.endTest(req);
     }
+
+    return this.clientStart(req);
   },
   team_response: function ({ request, session, version }) {
     return {
       response: {
-        text:
-          ["Привет вездекодерам!"],
-        tts:
-          "<speaker audio=marusia-sounds/music-drums-3> Привет ^вездекодерам!^",
+        text: ["Привет вездекодерам!"],
+        tts: "<speaker audio=marusia-sounds/music-drums-3> Привет вездекодерам!",
         end_session: false,
       },
       session: pick(["session_id", "message_id", "user_id"], session),
-      version
+      version,
     };
   },
   clientStart: function ({ request, session, version }) {
     return {
       response: {
-        text:
-          ["<speaker audio=marusia-sounds/nature-sea-2> Привет, как же прекрасно море Владивостока! Мы подготовили для вас тест по выбору категории Вездекода. Начнём?"],
-        tts:
-          "Привет! Мы подготовили для вас тест по выбору категории Вездекода. ^Начнём^?",
+        text: [
+          "Привет, как же прекрасно море Владивостока! Мы подготовили для вас тест по выбору категории Вездекода. Начнём?",
+        ],
+        tts: "<speaker audio=marusia-sounds/nature-sea-2> Привет, как же прекрасно море Владивостока! Мы подготовили для вас тест по выбору категории Вездекода. ^Начнём^?",
         buttons: [
           {
             title: "Да!",
-            payload: {},
-            url: "",
           },
           {
             title: "Нет",
-            payload: {},
-            url: ""
-          }
+          },
         ],
-        end_session: false
+        end_session: false,
       },
       session: pick(["session_id", "message_id", "user_id"], session),
-      version
+      version,
     };
   },
   clientStop: function ({ request, session, version }) {
     return {
       response: {
-        text:
-          "Было приятно с вами поболтать! Возвращайтесь, когда будет удобно!",
-        tts:
-          "<speaker audio=marusia-sounds/game-loss-2> Было приятно с вами поболтать! Возвращайтесь, когда будет удобно!",
-        end_session: true
+        text: "Было приятно с вами поболтать! Возвращайтесь, когда будет удобно!",
+        tts: "<speaker audio=marusia-sounds/game-loss-2> Было приятно с вами поболтать! Возвращайтесь, когда будет удобно!",
+        end_session: true,
       },
       session: pick(["session_id", "message_id", "user_id"], session),
-      version
+      version,
     };
   },
   startTest: function ({ request, session, version }) {
+    if (questionId > 1) {
+      if (questions[questionId - 2]["right"].toLowerCase() === lastAnswer) {
+        return {
+          response: {
+            text: [`Ответ верный!\n` + questions[questionId - 1]["text"]],
+            tts:
+              `Ответ верный! <speaker audio=marusia-sounds/game-win-1>` +
+              questions[questionId - 1]["tts"],
+            card: {
+              type: 'BigImage',
+              image_id: questions[questionId-1]['image_id']
+            },
+            buttons: getButtons(questions[questionId - 1]["variants"]),
+            end_session: false,
+          },
+          session: pick(["session_id", "message_id", "user_id"], session),
+          version,
+        };
+      } else {
+        return {
+          response: {
+            text: [`Ответ неверный!\n` + questions[questionId - 1]["text"]],
+            tts:
+              `Ответ неверный! <speaker audio=marusia-sounds/game-loss-2> ` +
+              questions[questionId - 1]["tts"],
+            // card: {
+            //   type: 'BigImage',
+            //   image_id: questions[questionId-1]['image_id']
+            // },
+            buttons: getButtons(questions[questionId - 1]["variants"]),
+            end_session: false,
+          },
+          session: pick(["session_id", "message_id", "user_id"], session),
+          version,
+        };
+      }
+    }
     return {
       response: {
-        text:
-          [questions[question-1]['text']],
-        tts:
-          questions[question-1]['tts'],
+        text: [questions[questionId - 1]["text"]],
+        tts: questions[questionId - 1]["tts"],
         card: {
-          type: 'BigImage',
-          image_id: questions[question-1]['image_id']
+          'type': 'BigImage',
+          'image_id': questions[questionId-1]['image_id']
         },
-        buttons: [
-          {
-            title: "Да",
-            payload: {},
-            url: "",
-          },
-          {
-            title: "Нет",
-            payload: {},
-            url: ""
-          }
-        ],
-        end_session: false
+        buttons: getButtons(questions[questionId - 1]["variants"]),
+        end_session: false,
       },
       session: pick(["session_id", "message_id", "user_id"], session),
-      version
+      version,
     };
   },
-  endTest: function ({ request, session, version, question }) {
+  endTest: function ({ request, session, version }) {
     return {
       response: {
-        text:
-            ['Тест завершен. Рекомендуемые категории: ' + recommendations],
+        text: [
+          `Тест завершен. Правильных ответов - ${rightAnswers}. Рекомендуемые категории:` +
+            recommendations[0].text,
+        ],
         tts:
-            'Тест завершен <speaker audio=marusia-sounds/game-win-1>. Рекомендуемые категории: ' + recommendations,
-        end_session: true
+          `Тест завершен <speaker audio=marusia-sounds/game-win-1> Правильных ответов - ${rightAnswers}. Рекомендуемые категории: ` +
+          recommendations[0].tts,
+          commands: [
+            {
+                "type":"BigImage",
+                "image_id":457239017
+            },
+            {
+                "type": "MiniApp",
+                "url": "https://vk.com/app7923597",
+            } 
+        ],
+        end_session: true,
       },
       session: pick(["session_id", "message_id", "user_id"], session),
-      version
+      version,
+    };
+  },
+  rightAnswer: function ({ request, session, version }) {
+    return {
+      response: {
+        text: ["Ответ верный!"],
+        tts: "<speaker audio=marusia-sounds/game-win-1> Ответ верный!",
+        end_session: false,
+      },
+      session: pick(["session_id", "message_id", "user_id"], session),
+      version,
+    };
+  },
+  wrongAnswer: function ({ request, session, version }) {
+    return {
+      response: {
+        text: ["Ответ неверный!"],
+        tts: "<speaker audio=marusia-sounds/game-loss-2> Ответ неверный!",
+        end_session: false,
+      },
+      session: pick(["session_id", "message_id", "user_id"], session),
+      version,
     };
   },
   test: function ({ request, session, version, question }) {
     return {
       response: {
-        text:
-            ['Тест завершен. Рекомендуемые категории: ' + recommendations],
-        tts:
-            'Поздравляю! <speaker audio=marusia-sounds/nature-sea-2>   Вы правильно ответили на все мои вопросы!',
-        end_session: true
+        text: ["Тест завершен. Рекомендуемые категории: " + recommendations],
+        tts: "Поздравляю! <speaker audio=marusia-sounds/nature-sea-2>   Вы правильно ответили на все мои вопросы!",
+        end_session: true,
       },
       session: pick(["session_id", "message_id", "user_id"], session),
-      version
+      version,
     };
   },
 };
