@@ -185,7 +185,7 @@ module.exports = {
     };
   },
   startTest: function ({ request, session, version }) {
-    if (questionId > 1) {
+    if (questionId > 2) {
       if (questions[questionId - 2]["right"].toLowerCase() === lastAnswer) {
         return {
           response: {
