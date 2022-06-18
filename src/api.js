@@ -1,6 +1,7 @@
 const express = require("express");
 const serverless = require("serverless-http");
 const createResponse = require("./create-response.js");
+const bodyParser = require("body-parser");
 const { pick } = require("ramda");
 
 const app = express();
