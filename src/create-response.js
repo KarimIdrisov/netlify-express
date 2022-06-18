@@ -210,10 +210,10 @@ module.exports = {
             tts:
               `Ответ неверный! <speaker audio=marusia-sounds/game-loss-2> ` +
               questions[questionId - 1]["tts"],
-            // card: {
-            //   type: 'BigImage',
-            //   image_id: questions[questionId-1]['image_id']
-            // },
+            card: {
+              type: 'BigImage',
+              image_id: questions[questionId-1]['image_id']
+            },
             buttons: getButtons(questions[questionId - 1]["variants"]),
             end_session: false,
           },
@@ -250,7 +250,7 @@ module.exports = {
           commands: [
             {
                 "type":"BigImage",
-                "image_id":457239017
+                "image_id":457239026
             },
             {
                 "type": "MiniApp",
@@ -259,7 +259,10 @@ module.exports = {
         ],
         end_session: true,
       },
-      session: pick(["session_id", "message_id", "user_id"], session),
+      session: {
+        ...pick(["session_id", "message_id", "user_id"], session),
+        skill_id: '5a3b63e1-d1a4-4951-b5fc-6d8f57f4ef4b',
+      },
       version,
     };
   },
