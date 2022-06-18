@@ -193,10 +193,10 @@ module.exports = {
             tts:
               `Ответ верный! <speaker audio=marusia-sounds/game-win-1>` +
               questions[questionId - 1]["tts"],
-            card: {
-              type: 'BigImage',
-              image_id: questions[questionId-1]['image_id']
-            },
+            // card: {
+            //   type: 'BigImage',
+            //   image_id: questions[questionId-1]['image_id']
+            // },
             buttons: getButtons(questions[questionId - 1]["variants"]),
             end_session: false,
           },
