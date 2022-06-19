@@ -2,7 +2,6 @@ const { pick, last } = require("ramda");
 
 var questionId = 0;
 var rightAnswers = 0;
-var answers = [];
 var lastAnswer = "";
 var questions = [
   {
@@ -79,10 +78,10 @@ module.exports = {
     if (req.request.command === "cofefu.ru вездеход") {
       return this.team_response(req);
     }
-    if (req.request.command === "test") {
-      return this.test(req);
-    }
     if (req.session.new) {
+      questionId = 0;
+      rightAnswers = 0;
+      lastAnswer = "";
       return this.clientStart(req);
     }
     if (
@@ -145,7 +144,7 @@ module.exports = {
     return {
       response: {
         text: ["Привет вездекодерам!"],
-        tts: "<speaker audio=marusia-sounds/music-drums-3> Привет вездекодерам!",
+        tts: "<speaker audio=marusia-sounds/music-drums-3> Привет везде`кодерам!",
         end_session: false,
       },
       session: pick(["session_id", "message_id", "user_id"], session),
@@ -193,6 +192,10 @@ module.exports = {
             tts:
               `Ответ верный! <speaker audio=marusia-sounds/game-win-1>` +
               questions[questionId - 1]["tts"],
+            // card: {
+            //   type: 'BigImage',
+            //   image_id: questions[questionId-1]['image_id']
+            // },
             buttons: getButtons(questions[questionId - 1]["variants"]),
             end_session: false,
           },
@@ -206,6 +209,10 @@ module.exports = {
             tts:
               `Ответ неверный! <speaker audio=marusia-sounds/game-loss-2> ` +
               questions[questionId - 1]["tts"],
+            // card: {
+            //   type: 'BigImage',
+            //   image_id: questions[questionId-1]['image_id']
+            // },
             buttons: getButtons(questions[questionId - 1]["variants"]),
             end_session: false,
           },
@@ -218,6 +225,10 @@ module.exports = {
       response: {
         text: [questions[questionId - 1]["text"]],
         tts: questions[questionId - 1]["tts"],
+        // card: {
+        //   'type': 'BigImage',
+        //   'image_id': questions[questionId-1]['image_id']
+        // },
         buttons: getButtons(questions[questionId - 1]["variants"]),
         end_session: false,
       },
@@ -236,6 +247,10 @@ module.exports = {
           `Тест завершен <speaker audio=marusia-sounds/game-win-1> Правильных ответов - ${rightAnswers}. Рекомендуемые категории: ` +
           recommendations[0].tts,
           commands: [
+            // {
+            //     "type":"BigImage",
+            //     "image_id":457239026
+            // },
             {
                 "type": "MiniApp",
                 "url": "https://vk.com/app7923597",
@@ -267,17 +282,6 @@ module.exports = {
         text: ["Ответ неверный!"],
         tts: "<speaker audio=marusia-sounds/game-loss-2> Ответ неверный!",
         end_session: false,
-      },
-      session: pick(["session_id", "message_id", "user_id"], session),
-      version,
-    };
-  },
-  test: function ({ request, session, version, question }) {
-    return {
-      response: {
-        text: ["Тест завершен. Рекомендуемые категории: " + recommendations],
-        tts: "Поздравляю! <speaker audio=marusia-sounds/nature-sea-2>   Вы правильно ответили на все мои вопросы!",
-        end_session: true,
       },
       session: pick(["session_id", "message_id", "user_id"], session),
       version,
