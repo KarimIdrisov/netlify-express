@@ -2,6 +2,7 @@ const { pick, last } = require("ramda");
 
 var questionId = 0;
 var rightAnswers = 0;
+var answers = [];
 var lastAnswer = "";
 var questions = [
   {
@@ -75,21 +76,13 @@ const getButtons = (variants) => {
 
 module.exports = {
   get_response: function (req) {
-    if (req.request.command.toLowerCase().includes('привет')) {
-      recommendations = [];
-      lastAnswer = '';
-      rightAnswers = '';
-      questionId = 0;
-      return this.clientStart(req);
-    }
     if (req.request.command === "cofefu.ru вездеход") {
       return this.team_response(req);
     }
+    if (req.request.command === "test") {
+      return this.test(req);
+    }
     if (req.session.new) {
-      recommendations = [];
-      lastAnswer = '';
-      rightAnswers = '';
-      questionId = 0;
       return this.clientStart(req);
     }
     if (
@@ -192,7 +185,7 @@ module.exports = {
     };
   },
   startTest: function ({ request, session, version }) {
-    if (questionId > 1) {
+    if (questionId > 2) {
       if (questions[questionId - 2]["right"].toLowerCase() === lastAnswer) {
         return {
           response: {
@@ -200,10 +193,6 @@ module.exports = {
             tts:
               `Ответ верный! <speaker audio=marusia-sounds/game-win-1>` +
               questions[questionId - 1]["tts"],
-            // card: {
-            //   type: 'BigImage',
-            //   image_id: questions[questionId-1]['image_id']
-            // },
             buttons: getButtons(questions[questionId - 1]["variants"]),
             end_session: false,
           },
@@ -217,10 +206,6 @@ module.exports = {
             tts:
               `Ответ неверный! <speaker audio=marusia-sounds/game-loss-2> ` +
               questions[questionId - 1]["tts"],
-            // card: {
-            //   type: 'BigImage',
-            //   image_id: questions[questionId-1]['image_id']
-            // },
             buttons: getButtons(questions[questionId - 1]["variants"]),
             end_session: false,
           },
@@ -233,10 +218,6 @@ module.exports = {
       response: {
         text: [questions[questionId - 1]["text"]],
         tts: questions[questionId - 1]["tts"],
-        // card: {
-        //   'type': 'BigImage',
-        //   'image_id': questions[questionId-1]['image_id']
-        // },
         buttons: getButtons(questions[questionId - 1]["variants"]),
         end_session: false,
       },
@@ -255,13 +236,9 @@ module.exports = {
           `Тест завершен <speaker audio=marusia-sounds/game-win-1> Правильных ответов - ${rightAnswers}. Рекомендуемые категории: ` +
           recommendations[0].tts,
           commands: [
-            // {
-            //     "type":"BigImage",
-            //     "image_id":457239026
-            // },
             {
                 "type": "MiniApp",
-                "url": "https://vk.com/app7543093",
+                "url": "https://vk.com/app7923597",
             } 
         ],
         end_session: true,
