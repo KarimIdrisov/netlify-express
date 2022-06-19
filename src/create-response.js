@@ -2,7 +2,6 @@ const { pick, last } = require("ramda");
 
 var questionId = 0;
 var rightAnswers = 0;
-var answers = [];
 var lastAnswer = "";
 var questions = [
   {
@@ -76,13 +75,21 @@ const getButtons = (variants) => {
 
 module.exports = {
   get_response: function (req) {
+    if (req.request.command.toLowerCase().includes('привет')) {
+      recommendations = [];
+      lastAnswer = '';
+      rightAnswers = '';
+      questionId = 0;
+      return this.clientStart(req);
+    }
     if (req.request.command === "cofefu.ru вездеход") {
       return this.team_response(req);
     }
-    if (req.request.command === "test") {
-      return this.test(req);
-    }
     if (req.session.new) {
+      recommendations = [];
+      lastAnswer = '';
+      rightAnswers = '';
+      questionId = 0;
       return this.clientStart(req);
     }
     if (
